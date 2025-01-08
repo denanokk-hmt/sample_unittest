@@ -26,10 +26,10 @@ jobs:
   
       # 【出力されたカバレッジファイルをawkを使って、％結果を検索し閾値を超えていなかればアウト 閾値については検討】
       - name: Check Coverage
-          run:|
-            COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
-            echo "Code coverage is $COVERAGE%"
-            if (( $(echo "$COVERAGE < 100.0" | bc -l) )); then
-              echo "Code coverage is less than 80%"
-              exit 1
-            fi
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          echo "Code coverage is $COVERAGE%"
+          if (( $(echo "$COVERAGE < 100.0" | bc -l) )); then
+            echo "Code coverage is less than 80%"
+            exit 1
+          fi
