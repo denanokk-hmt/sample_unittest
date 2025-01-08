@@ -1,0 +1,35 @@
+name: Unit Tests
+
+on:
+  pull_requests:
+    branches:
+      - dev
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+  
+  steps:
+    # 
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    # 【Goのバージョン指定については検討】
+    - name: Go Setup
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.23
+  
+    # 【coverage.outを直下に出力】
+    - name: Run Unit Tests With Coverage
+      run: go test -v ./... -coverprofile=coverage.out
+
+    # 【出力されたカバレッジファイルをawkを使って、％結果を検索し閾値を超えていなかればアウト 閾値については検討】
+    - name: Check Coverage
+        run:|
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          echo "Code coverage is $COVERAGE%"
+          if (( $(echo "$COVERAGE < 100.0" | bc -l) )); then
+            echo "Code coverage is less than 80%"
+            exit 1
+          fi
